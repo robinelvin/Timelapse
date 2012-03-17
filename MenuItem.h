@@ -20,10 +20,29 @@ public:
 	void addDown(MenuItem* menuItem);
 	void addLeftCallback(void* callbackObj, void (*callbackFunction)(void* callbackObj));
 	void addRightCallback(void* callbackObj, void (*callbackFunction)(void* callbackObj));
+
+	void setValue(float value);
+	void setValue(int value);
+	void setValue(bool value);
+
+	float getFloatValue();
+	int getIntValue();
+	bool getBoolValue();
+
 	MenuItem* moveRight();
 	MenuItem* moveLeft();
 	MenuItem* moveUp();
 	MenuItem* moveDown();
+
+	MenuItem* _leftItem;
+	MenuItem* _rightItem;
+	MenuItem* _downItem;
+	MenuItem* _upItem;
+	// Flag whether we are entering a value
+	bool valueEntry;
+	enum valuetype_t { Float = 1 << 7, OnOff = 1 << 6, Integer = 1 << 5, Nothing = 0 };
+	valuetype_t inputType;
+	unsigned long current_value;
 
 private:
   const char* _itemText;
@@ -32,10 +51,6 @@ private:
   void (*_leftCallbackFunc)(void* callbackObj);
   void (*_rightCallbackFunc)(void* callbackObj);
 protected:
-  MenuItem* _leftItem;
-  MenuItem* _rightItem;
-  MenuItem* _downItem;
-  MenuItem* _upItem;
 
 };
 

@@ -12,17 +12,31 @@
 #include <HardwareSerial.h>
 #include "Menu.h"
 #include "MenuItem.h"
+#include "Camera.h"
 
 class UI {
 public:
 	UI();
-	virtual ~UI();
 	void InitUserInterface();
 	void CheckUI();
+	void ShowHomeScreen();
+	void FadeLCD();
+	void PrintValue();
+
+	// Menu callback functions
 	static void LCDBrighter(void* callbackObj);
 	static void LCDDarker(void* callbackObj);
+	static void LCDTimeoutDecrease(void* callbackObj);
+	static void LCDTimeoutIncrease(void* callbackObj);
+
+	// Enums
+	enum runstatus_t { Running = 1 << 7, CameraEngaged = 1 << 6, CameraComplete = 1 << 5, MotorsRunning = 1 << 4, ExternalTrigger = 1 << 3, NotRunning = 0 };
+	runstatus_t runStatus;
+	enum external_interval_t { External1 = 1 << 7, External2 = 1 << 6, FiringOK = 1 << 5, ExternalNone = 0 };
+	external_interval_t externalInterval;
 
 private:
+	unsigned long idle_time;
 	// last read button (analog) value
 	int _last_button_read;
 	byte _button_pressed;
@@ -30,10 +44,23 @@ private:
 	LiquidCrystal lcd;
 	bool CheckButtonPressed();
 	void UpdateMenu();
+	// Menu
 	Menu menu;
-	MenuItem rootItem;
+	MenuItem manualMoveItem;
+	MenuItem axis1Item;
+	MenuItem axis2Item;
+	MenuItem cameraItem;
+	MenuItem settingsItem;
+	MenuItem scopeItem;
 	MenuItem lcdBrightness;
-	int _lcd_brightness;
+	MenuItem lcdFadeTime;
+
+	// Camera
+	Camera camera;
+
+	// Settings variables
+	byte _lcd_brightness;
+	unsigned int _lcd_fade_timeout;
 };
 
 // lcd pins
@@ -74,5 +101,9 @@ private:
 // how much to increment for each cycle the button is held?
 
 #define HOLD_BUT_VALINC 10
+
+// camera pins
+#define SHUTTER_PIN 13
+#define FOCUS_PIN 12
 
 #endif /* UI_H_ */
